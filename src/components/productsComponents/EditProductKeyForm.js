@@ -12,6 +12,7 @@ import { connect } from "react-redux";
 import { saveEditProductKey } from "../../actions";
 import { productsCategories, productsKeyTypes } from "../../data";
 import styled from "styled-components";
+import { handleProducts } from "../../firebase/firestoreUtils";
 
 const StyledTextInput = styled(TextField)`
   width: 120px;
@@ -20,11 +21,8 @@ const StyledTextInput = styled(TextField)`
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(0),
-    // width: 300,
-    // minWidth: 150,
     display: "flex",
     justifyContent: "space-between",
-    // marginTop: "20px",
     "& > *": {
       marginRight: "10px",
     },
@@ -46,6 +44,7 @@ const EditProductKeyForm = ({
   productKeyType,
   productId,
   saveEditProductKey,
+  selectedOrder,
 }) => {
   const classes = useStyles();
 
@@ -56,6 +55,15 @@ const EditProductKeyForm = ({
 
     if (productKeyType === productsKeyTypes.productCategory) {
       saveEditProductKey(productId, productKeyType, category);
+
+      const productsAfterEdit = selectedOrder.products.map((product) => {
+        if (product.productId === productId) {
+          product.productCategory = category;
+        }
+        return product;
+      });
+
+      handleProducts(productsAfterEdit, selectedOrder.orderId);
     } else {
       let newKeyValue;
 
@@ -66,6 +74,15 @@ const EditProductKeyForm = ({
       }
 
       saveEditProductKey(productId, productKeyType, newKeyValue);
+
+      const productsAfterEdit = selectedOrder.products.map((product) => {
+        if (product.productId === productId) {
+          product[productKeyType] = newKeyValue;
+        }
+        return product;
+      });
+
+      handleProducts(productsAfterEdit, selectedOrder.orderId);
     }
   };
 
@@ -105,9 +122,13 @@ const EditProductKeyForm = ({
   );
 };
 
+const mapStateToProps = (state) => ({
+  selectedOrder: state.selectedOrder,
+});
+
 const mapDispatchToProps = (dispatch) => ({
   saveEditProductKey: (productId, keyType, newKeyValue) =>
     dispatch(saveEditProductKey(productId, keyType, newKeyValue)),
 });
 
-export default connect(null, mapDispatchToProps)(EditProductKeyForm);
+export default connect(mapStateToProps, mapDispatchToProps)(EditProductKeyForm);

@@ -23,7 +23,7 @@ import FilterListIcon from "@material-ui/icons/FilterList";
 import { connect } from "react-redux";
 import {
   deleteOrders,
-  openAddProductModal,
+  openModal,
   closeAddProductModal,
   selectOrder,
   calculatePayment,
@@ -32,6 +32,7 @@ import { AddCircleOutline, Visibility, Edit } from "@material-ui/icons";
 import Modal from "./Modal";
 import DoneIcon from "@material-ui/icons/Done";
 import CloseIcon from "@material-ui/icons/Close";
+import { deleteOrderFromFirestore } from "../firebase/firestoreUtils";
 
 // function createData(name, calories, fat, carbs, protein) {
 //   return { name, calories, fat, carbs, protein };
@@ -253,17 +254,15 @@ const EnhancedTableToolbar = (props) => {
             <DeleteIcon
               onClick={() => {
                 deleteOrders(selectedOrders);
+                deleteOrderFromFirestore(selectedOrders);
+
                 clearSelectedOrders();
               }}
             />
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
+        ""
       )}
     </Toolbar>
   );
@@ -306,14 +305,14 @@ const useStyles = makeStyles((theme) => ({
 const OrdersTable = ({
   orders,
   deleteOrders,
-  openAddProductModal,
+  openModal,
   open,
   selectOrder,
   calculatePayment,
 }) => {
   const classes = useStyles();
   const [order, setOrder] = useState("asc");
-  const [orderBy, setOrderBy] = useState("calories");
+  const [orderBy, setOrderBy] = useState("payment");
   const [selected, setSelected] = useState([]);
   const [page, setPage] = useState(0);
   const [dense, setDense] = useState(false);
@@ -321,11 +320,11 @@ const OrdersTable = ({
   const [modalType, setModalType] = useState("addProduct");
 
   const handleOpen = () => {
-    openAddProductModal(true);
+    openModal(true);
   };
 
   const handleClose = () => {
-    openAddProductModal(false);
+    openModal(false);
     calculatePayment();
   };
 
@@ -431,6 +430,19 @@ const OrdersTable = ({
                   const isItemSelected = isSelected(orderId);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
+                  const pamentDateArray = paymentDate.split("/");
+                  const paymentDateToDisplay = `${pamentDateArray[2]}/${pamentDateArray[1]}/${pamentDateArray[0]} `;
+                  const deliveryDateArray = deliveryDate.split("/");
+                  const deliveryDateToDisplay = `${deliveryDateArray[2]}/${deliveryDateArray[1]}/${deliveryDateArray[0]} `;
+                  const priorityToDisplay =
+                    priority === "a"
+                      ? "low"
+                      : priority === "b"
+                      ? "mid"
+                      : "high";
+
+                  console.log(deliveryDateToDisplay);
+
                   return (
                     <TableRow
                       hover
@@ -461,11 +473,13 @@ const OrdersTable = ({
                         {paid === "true" ? <DoneIcon /> : <CloseIcon />}
                       </TableCell>
                       <TableCell align="right">{currency}</TableCell>
-                      <TableCell align="right">{priority}</TableCell>
+                      <TableCell align="right">{priorityToDisplay}</TableCell>
                       <TableCell align="right">
-                        {paid === "true" ? paymentDate : ""}
+                        {paid === "true" ? paymentDateToDisplay : ""}
                       </TableCell>
-                      <TableCell align="right">{deliveryDate}</TableCell>
+                      <TableCell align="right">
+                        {deliveryDateToDisplay}
+                      </TableCell>
                       <TableCell align="right">
                         <Tooltip title="Add Product">
                           <IconButton
@@ -545,7 +559,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   deleteOrders: (selectedOrders) => dispatch(deleteOrders(selectedOrders)),
-  openAddProductModal: (openState) => dispatch(openAddProductModal(openState)),
+  openModal: (openState) => dispatch(openModal(openState)),
   selectOrder: (orderId) => dispatch(selectOrder(orderId)),
   calculatePayment: () => dispatch(calculatePayment()),
 });

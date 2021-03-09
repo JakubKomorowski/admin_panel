@@ -5,6 +5,7 @@ import { productsKeyTypes } from "../../data";
 import EditProductKeyForm from "./EditProductKeyForm";
 import styled from "styled-components";
 import Button from "@material-ui/core/Button";
+import { handleProducts } from "../../firebase/firestoreUtils";
 
 const StyledUl = styled.ul`
   list-style: none;
@@ -45,6 +46,13 @@ const DisplayProductsOrder = ({
 }) => {
   const { key, id } = selectedProductKeyEditAndId;
 
+  const removeProductFromDatabase = (id) => {
+    const filteredProducts = selectedOrder.products.filter((product) => {
+      return product.productId !== id;
+    });
+
+    handleProducts([...filteredProducts], selectedOrder.orderId);
+  };
   return (
     <>
       <h2>Products list</h2>
@@ -91,7 +99,6 @@ const DisplayProductsOrder = ({
                     </StyledProductFeature>
                   </>
                 )}
-
                 {key === productsKeyTypes.productPrice && id === productId ? (
                   <StyledProductFeature>
                     <StyledKey>Price:</StyledKey>
@@ -183,11 +190,11 @@ const DisplayProductsOrder = ({
                     </StyledProductFeature>
                   </>
                 )}
-
                 <Button
                   variant="outlined"
                   color="secondary"
                   onClick={() => {
+                    removeProductFromDatabase(productId);
                     removeProduct(productId);
                   }}
                 >

@@ -10,8 +10,8 @@ export const deleteOrders = (selectedOrders) => ({
   payload: selectedOrders,
 });
 
-export const openAddProductModal = (openState) => ({
-  type: actionTypes.OPEN_ADD_PRODUCT,
+export const openModal = (openState) => ({
+  type: actionTypes.OPEN_MODAL,
   payload: openState,
 });
 
@@ -59,4 +59,9 @@ export const saveEditProductKey = (productId, keyType, newKeyValue) => ({
 
 export const calculatePayment = () => ({
   type: "CALCULATE_PAYMENT",
+});
+
+export const getOrders = (orders) => ({
+  type: actionTypes.GET_ORDERS,
+  payload: orders,
 });

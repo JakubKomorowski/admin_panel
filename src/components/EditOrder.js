@@ -1,6 +1,7 @@
 import React from "react";
 import OrderForm from "./OrderForm";
 import styled from "styled-components";
+import EditOrderForm from "./EditOrderForm";
 
 const StyledH2 = styled.h2`
   margin-bottom: 1rem;
@@ -12,7 +13,7 @@ const EditOrder = ({ handleClose }) => {
   return (
     <div>
       <StyledH2>Edit Order</StyledH2>
-      <OrderForm handleClose={handleClose} />
+      <EditOrderForm handleClose={handleClose} />
     </div>
   );
 };
