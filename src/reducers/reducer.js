@@ -1,28 +1,28 @@
 import { saveEditProductKey, selectOrder } from "../actions";
 import { actionTypes } from "../actions/actionTypes";
 
+// {
+//   orderId: 1,
+//   clientName: "",
+//   payment: 2000,
+//   paid: false,
+//   deliveryDate: "",
+//   paymentDate: "",
+//   currency: "",
+//   priority: "low",
+//   products: [
+//     {
+//       productId: 1,
+//       productName: "first",
+//       productPrice: 20,
+//       productCategory: "PC",
+//       productQuantity: 1,
+//     },
+//   ],
+// },
+
 const initialState = {
-  orders: [
-    {
-      orderId: 1,
-      clientName: "",
-      payment: 2000,
-      paid: false,
-      deliveryDate: "",
-      paymentDate: "",
-      currency: "",
-      priority: "low",
-      products: [
-        {
-          productId: 1,
-          productName: "first",
-          productPrice: 20,
-          productCategory: "PC",
-          productQuantity: 1,
-        },
-      ],
-    },
-  ],
+  orders: [],
   open: false,
   selectedOrder: null,
   isProductEditing: false,
@@ -31,19 +31,16 @@ const initialState = {
     key: "",
   },
 };
-// payload = {
-//   keyType: "price",
-//   newKeyValue: 'second'
-// }
-// payload = "productName"
-// if(item.productName === payload.type)
-// item.productName = payload.value
-
-// item[payload.keyType] = payload.newKeyValue
 
 const reducer = (state = initialState, action) => {
   const { type, payload } = action;
   switch (type) {
+    case actionTypes.GET_ORDERS:
+      return {
+        ...state,
+        orders: payload,
+      };
+
     case actionTypes.ADD_ORDER:
       return {
         ...state,
@@ -57,7 +54,7 @@ const reducer = (state = initialState, action) => {
         ...state,
         orders: [...filteredOrders],
       };
-    case actionTypes.OPEN_ADD_PRODUCT:
+    case actionTypes.OPEN_MODAL:
       return {
         ...state,
         open: payload,

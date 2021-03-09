@@ -15,15 +15,16 @@ import {
   KeyboardDatePicker,
 } from "@material-ui/pickers";
 import moment from "moment";
-import { editOrder } from "../actions";
+import { editOrder, openModal } from "../actions";
 import { connect } from "react-redux";
 import { Link, Redirect } from "react-router-dom";
 import OrdersTable from "./OrdersTable";
 import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+
 import FormLabel from "@material-ui/core/FormLabel";
-import { addOrder } from "../firebase/firestoreUtils";
+import { addOrder, editOrderFirebase } from "../firebase/firestoreUtils";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,9 +33,7 @@ const useStyles = makeStyles((theme) => ({
       minWidth: "25ch",
     },
   },
-  // root: {
-  //   flexGrow: 1,
-  // },
+
   formControl: {
     margin: theme.spacing(0),
     minWidth: 210,
@@ -44,98 +43,154 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const OrderForm = ({ orderFormType, editOrder, handleClose }) => {
+const EditOrderForm = ({ selectedOrder, closeModal }) => {
+  const {
+    clientName,
+    currency,
+    priority,
+    paid,
+    deliveryDate,
+    paymentDate,
+  } = selectedOrder;
+
   const classes = useStyles();
-  const [selectedPaymentDate, setSelectedPaymentDate] = useState(new Date());
-  const [selectedDeliveryDate, setSelectedDeliveryDate] = useState(new Date());
-  const [currency, setCurrency] = useState("");
-  const [priority, setPriority] = useState("");
-  const [paid, setPaid] = useState("false");
-  const [pamentDateVisible, setPamentDateVisible] = useState(false);
-  const [redirect, setRedirect] = useState(false);
+
+  const arrayOfDateToDisplay = paymentDate.split("/");
+  arrayOfDateToDisplay.reverse();
+
+  const paymentMonth = parseInt(arrayOfDateToDisplay[1]) - 1;
+
+  const dateToDisplay = new Date(
+    arrayOfDateToDisplay[2],
+    `${paymentMonth}`,
+    arrayOfDateToDisplay[0]
+  );
+
+  const arrayOfDateToDisplay2 = deliveryDate.split("/");
+  arrayOfDateToDisplay2.reverse();
+
+  const deliveryMonth = parseInt(arrayOfDateToDisplay2[1]) - 1;
+
+  const dateToDisplay2 = new Date(
+    arrayOfDateToDisplay2[2],
+    `${deliveryMonth}`,
+    arrayOfDateToDisplay2[0]
+  );
+
+  console.log(priority);
+
+  const [newSelectedPaymentDate, setNewSelectedPaymentDate] = useState(
+    dateToDisplay
+  );
+  const [newSelectedDeliveryDate, setNewSelectedDeliveryDate] = useState(
+    dateToDisplay2
+  );
+  const [newClientName, setNewClientName] = useState(clientName);
+  const [newCurrency, setNewCurrency] = useState(currency);
+  const [newPriority, setNewPriority] = useState(priority);
+  const [newPaid, setNewPaid] = useState(paid);
+  // const [pamentDateVisible, setPamentDateVisible] = useState(false);
+  // const [redirect, setRedirect] = useState(false);
 
   const handlePaidChange = (e) => {
-    setPaid(e.target.value);
+    setNewPaid(e.target.value);
     console.log(paid);
   };
 
-  useEffect(() => {
-    setPamentDateVisible(!pamentDateVisible);
-  }, [paid]);
+  // useEffect(() => {
+  //   setPamentDateVisible(!pamentDateVisible);
+  // }, [paid]);
 
   const handleCurrencyChange = (event) => {
-    setCurrency(event.target.value);
+    setNewCurrency(event.target.value);
   };
 
   const handlePriorityChange = (event) => {
-    setPriority(event.target.value);
+    setNewPriority(event.target.value);
+  };
+
+  const handleClientNameChange = (event) => {
+    setNewClientName(event.target.value);
   };
 
   const handlePaymentDateChange = (date) => {
-    setSelectedPaymentDate(date);
+    setNewSelectedPaymentDate(date);
   };
 
   const handleDeliveryDateChange = (date) => {
-    setSelectedDeliveryDate(date);
+    setNewSelectedDeliveryDate(date);
   };
 
-  const handleOrderForm = (e) => {
+  //   const handleOrderForm = (e) => {
+  //     e.preventDefault();
+
+  //     const clientName = e.target.clientName.value;
+  //     // const payment = e.target.payment.value;
+
+  //     if (orderFormType === "addOrder") {
+  //       const newOrder = {
+  //         clientName,
+  //         payment: 0,
+  //         currency,
+  //         paid,
+  //         priority,
+  //         paymentDate: formattedPaymentDate,
+  //         deliveryDate: formattedDeliveryDate,
+  //         // orderId: uuidv4(),
+  //         products: [],
+  //       };
+
+  //       addOrder(newOrder);
+  //       // addOrder(newOrder);
+  //       setRedirect(true);
+  //     } else {
+  //       const editedOrder = {
+  //         clientName,
+  //         // payment,
+  //         currency,
+  //         paid,
+  //         priority,
+  //         paymentDate: formattedPaymentDate,
+  //         deliveryDate: formattedDeliveryDate,
+  //       };
+  //       editOrder(editedOrder);
+  //       handleClose();
+  //       //miejsce na akcje
+  //     }
+
+  //     e.target.reset();
+  //     setCurrency("");
+  //     setPriority("");
+  //     setSelectedPaymentDate(new Date());
+  //     setSelectedDeliveryDate(new Date());
+  //   };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    const formattedPaymentDate = moment(selectedPaymentDate).format(
+    const formattedPaymentDate = moment(newSelectedPaymentDate).format(
       "yyyy/MM/DD"
     );
-    const formattedDeliveryDate = moment(selectedDeliveryDate).format(
+    const formattedDeliveryDate = moment(newSelectedDeliveryDate).format(
       "yyyy/MM/DD"
     );
 
-    const formatedPriority =
-      priority === "high" ? "c" : priority === "mid" ? "b" : "a";
+    const order = {
+      clientName: newClientName,
+      currency: newCurrency,
+      priority: newPriority,
+      paid: newPaid,
+      paymentDate: formattedPaymentDate,
+      deliveryDate: formattedDeliveryDate,
+    };
 
-    const clientName = e.target.clientName.value;
-    // const payment = e.target.payment.value;
-
-    if (orderFormType === "addOrder") {
-      const newOrder = {
-        clientName,
-        payment: 0,
-        currency,
-        paid,
-        priority: formatedPriority,
-        paymentDate: formattedPaymentDate,
-        deliveryDate: formattedDeliveryDate,
-        // orderId: uuidv4(),
-        products: [],
-      };
-
-      addOrder(newOrder);
-      // addOrder(newOrder);
-      setRedirect(true);
-    } else {
-      const editedOrder = {
-        clientName,
-        // payment,
-        currency,
-        paid,
-        priority: formatedPriority,
-        paymentDate: formattedPaymentDate,
-        deliveryDate: formattedDeliveryDate,
-      };
-      editOrder(editedOrder);
-      handleClose();
-      //miejsce na akcje
-    }
-
-    e.target.reset();
-    setCurrency("");
-    setPriority("");
-    setSelectedPaymentDate(new Date());
-    setSelectedDeliveryDate(new Date());
+    editOrderFirebase(selectedOrder.orderId, order);
+    closeModal(false);
   };
+
   return (
     <>
       <div>
-        <form onSubmit={handleOrderForm}>
+        <form onSubmit={handleSubmit}>
           <Grid
             container
             justify="center"
@@ -148,6 +203,8 @@ const OrderForm = ({ orderFormType, editOrder, handleClose }) => {
                 id="outlined-basic"
                 name="clientName"
                 label="Client Name"
+                value={newClientName}
+                onChange={handleClientNameChange}
                 variant="outlined"
               />
             </Grid>
@@ -169,7 +226,7 @@ const OrderForm = ({ orderFormType, editOrder, handleClose }) => {
                 <Select
                   labelId="demo-simple-select-outlined-label"
                   id="demo-simple-select-outlined"
-                  value={currency}
+                  value={newCurrency}
                   onChange={handleCurrencyChange}
                   label="Currency"
                 >
@@ -187,13 +244,13 @@ const OrderForm = ({ orderFormType, editOrder, handleClose }) => {
                 <Select
                   labelId="demo-simple-select-outlined-label"
                   id="demo-simple-select-outlined"
-                  value={priority}
+                  value={newPriority}
                   onChange={handlePriorityChange}
                   label="Priority"
                 >
-                  <MenuItem value="low">Low</MenuItem>
-                  <MenuItem value="mid">Mid</MenuItem>
-                  <MenuItem value="high">High</MenuItem>
+                  <MenuItem value="a">Low</MenuItem>
+                  <MenuItem value="b">Mid</MenuItem>
+                  <MenuItem value="c">High</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -204,7 +261,7 @@ const OrderForm = ({ orderFormType, editOrder, handleClose }) => {
                 <RadioGroup
                   aria-label="paid"
                   name="paid"
-                  value={paid}
+                  value={newPaid}
                   onChange={handlePaidChange}
                   row
                 >
@@ -221,23 +278,8 @@ const OrderForm = ({ orderFormType, editOrder, handleClose }) => {
                 </RadioGroup>
               </FormControl>
             </Grid>
-
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              {pamentDateVisible ? (
-                <Grid item xs={12}>
-                  <KeyboardDatePicker
-                    margin="normal"
-                    id="date-picker-dialog"
-                    label="Delivery date"
-                    format="dd/MM/yyyy"
-                    value={selectedDeliveryDate}
-                    onChange={handleDeliveryDateChange}
-                    KeyboardButtonProps={{
-                      "aria-label": "change date",
-                    }}
-                  />
-                </Grid>
-              ) : (
+              {newPaid === "true" ? (
                 <>
                   <Grid item xs={12}>
                     <KeyboardDatePicker
@@ -245,7 +287,7 @@ const OrderForm = ({ orderFormType, editOrder, handleClose }) => {
                       id="date-picker-dialog"
                       label="Payment date"
                       format="dd/MM/yyyy"
-                      value={selectedPaymentDate}
+                      value={newSelectedPaymentDate}
                       onChange={handlePaymentDateChange}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
@@ -258,7 +300,7 @@ const OrderForm = ({ orderFormType, editOrder, handleClose }) => {
                       id="date-picker-dialog"
                       label="Delivery date"
                       format="dd/MM/yyyy"
-                      value={selectedDeliveryDate}
+                      value={newSelectedDeliveryDate}
                       onChange={handleDeliveryDateChange}
                       KeyboardButtonProps={{
                         "aria-label": "change date",
@@ -266,45 +308,40 @@ const OrderForm = ({ orderFormType, editOrder, handleClose }) => {
                     />
                   </Grid>
                 </>
+              ) : (
+                <Grid item xs={12}>
+                  <KeyboardDatePicker
+                    margin="normal"
+                    id="date-picker-dialog"
+                    label="Delivery date"
+                    format="dd/MM/yyyy"
+                    value={newSelectedDeliveryDate}
+                    onChange={handleDeliveryDateChange}
+                    KeyboardButtonProps={{
+                      "aria-label": "change date",
+                    }}
+                  />
+                </Grid>
               )}
             </MuiPickersUtilsProvider>
             <Grid item xs={12}>
               <Button type="submit" variant="outlined">
-                {orderFormType === "addOrder" ? "Add" : "Save"}
+                Save
               </Button>
             </Grid>
           </Grid>
         </form>
-        {redirect ? <Redirect to="/orders-table" /> : null}
       </div>
     </>
   );
 };
 
-const mapDispatchToProps = (dispatch) => ({
-  // addOrder: (newOrder) => dispatch(addOrder(newOrder)),
-  editOrder: (editedOrder) => dispatch(editOrder(editedOrder)),
+const mapStateToProps = (state) => ({
+  selectedOrder: state.selectedOrder,
 });
 
-export default connect(null, mapDispatchToProps)(OrderForm);
+const mapDispatchToProps = (dispatch) => ({
+  closeModal: (openState) => dispatch(openModal(openState)),
+});
 
-// export default function RadioButtonsGroup() {
-//   const handlePaidChange = (event) => {
-//     setValue(event.target.value);
-//   };
-
-//   return (
-//     <FormControl component="fieldset">
-//       <FormLabel component="legend">Gender</FormLabel>
-//       <RadioGroup
-//         aria-label="gender"
-//         name="gender1"
-//         value={value}
-//         onChange={handlePaidChange}
-//       >
-//         <FormControlLabel value={false} control={<Radio />} label="Yes" />
-//         <FormControlLabel value={true} control={<Radio />} label="No" />
-//       </RadioGroup>
-//     </FormControl>
-//   );
-// }
+export default connect(mapStateToProps, mapDispatchToProps)(EditOrderForm);

@@ -11,6 +11,7 @@ import { productsCategories } from "../data";
 import { connect } from "react-redux";
 import { addProduct } from "../actions";
 import styled from "styled-components";
+import { handleProducts } from "../firebase/firestoreUtils";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -28,7 +29,7 @@ const StyledH2 = styled.h2`
   text-align: center;
 `;
 
-const AddProductForm = ({ addProduct }) => {
+const AddProductForm = ({ addProduct, selectedOrder }) => {
   const [categories, setCategories] = useState("");
   const classes = useStyles();
 
@@ -52,7 +53,9 @@ const AddProductForm = ({ addProduct }) => {
       productId,
     };
 
-    addProduct(product);
+    handleProducts([...selectedOrder.products, product], selectedOrder.orderId);
+
+    // addProduct(product);
     e.target.reset();
     setCategories("");
   };
@@ -130,8 +133,12 @@ const AddProductForm = ({ addProduct }) => {
   );
 };
 
+const mapStateToProps = (state) => ({
+  selectedOrder: state.selectedOrder,
+});
+
 const mapDispatchToProps = (dispatch) => ({
   addProduct: (product) => dispatch(addProduct(product)),
 });
 
-export default connect(null, mapDispatchToProps)(AddProductForm);
+export default connect(mapStateToProps, mapDispatchToProps)(AddProductForm);
