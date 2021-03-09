@@ -9,7 +9,7 @@ import Select from "@material-ui/core/Select";
 import { makeStyles } from "@material-ui/core/styles";
 import { productsCategories } from "../data";
 import { connect } from "react-redux";
-import { addProduct } from "../actions";
+import { addProduct, openModal } from "../actions";
 import styled from "styled-components";
 import { handleProducts } from "../firebase/firestoreUtils";
 
@@ -29,9 +29,13 @@ const StyledH2 = styled.h2`
   text-align: center;
 `;
 
-const AddProductForm = ({ addProduct, selectedOrder }) => {
+const AddProductForm = ({ addProduct, selectedOrder, openModal }) => {
   const [categories, setCategories] = useState("");
   const classes = useStyles();
+
+  const handleClose = () => {
+    openModal(false);
+  };
 
   const handleCategoryChange = (event) => {
     setCategories(event.target.value);
@@ -123,7 +127,7 @@ const AddProductForm = ({ addProduct, selectedOrder }) => {
             </FormControl>
           </Grid>
           <Grid item>
-            <Button type="submit" variant="outlined">
+            <Button type="submit" variant="outlined" onClick={handleClose}>
               Add
             </Button>
           </Grid>
@@ -139,6 +143,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   addProduct: (product) => dispatch(addProduct(product)),
+  openModal: (openState) => dispatch(openModal(openState)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddProductForm);
