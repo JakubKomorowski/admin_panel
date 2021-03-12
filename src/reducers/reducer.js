@@ -1,4 +1,3 @@
-import { saveEditProductKey, selectOrder } from "../actions";
 import { actionTypes } from "../actions/actionTypes";
 
 // {
@@ -30,11 +29,18 @@ const initialState = {
     id: null,
     key: "",
   },
+  currentUser: null,
 };
 
 const reducer = (state = initialState, action) => {
   const { type, payload } = action;
   switch (type) {
+    case actionTypes.SET_CURRENT_USER:
+      return {
+        ...state,
+        currentUser: payload,
+      };
+
     case actionTypes.GET_ORDERS:
       return {
         ...state,
@@ -100,7 +106,6 @@ const reducer = (state = initialState, action) => {
           el.products = el.products.filter((el) => {
             return el.productId !== payload;
           });
-          // el.products = [...filteredProducts];
         }
         return el;
       });
@@ -135,48 +140,6 @@ const reducer = (state = initialState, action) => {
         },
       };
 
-    // case actionTypes.SAVE_PRODUCT_KEY_EDIT:
-    //   const savedAfterEditing = state.orders.map((el) => {
-    //     el.products.map((el) => {
-    //       if (el.productName === payload.keyType) {
-    //         el.productName = payload.newKeyValue;
-    //       } else if (el.productPrice === payload.keyType) {
-    //         el.productPrice = parseInt(payload.newKeyValue);
-    //       } else if (el.productCategory === payload.keyType) {
-    //         el.productCategory = payload.newKeyValue;
-    //       } else if (el.productQuantity === payload.keyType) {
-    //         el.productQuantity = parseInt(payload.newKeyValue);
-    //       }
-
-    //       // el[payload.keyType] = payload.newKeyValue;
-    //       return el;
-    //     });
-    //     return el;
-    //   });
-    //   const savedSelectedAfterEditing = state.selectedOrder.products.map(
-    //     (el) => {
-    //       if (el.productName === payload.keyType) {
-    //         el.productName = payload.newKeyValue;
-    //       } else if (el.productPrice === payload.keyType) {
-    //         el.productPrice = parseInt(payload.newKeyValue);
-    //       } else if (el.productCategory === payload.keyType) {
-    //         el.productCategory = payload.newKeyValue;
-    //       } else if (el.productQuantity === payload.keyType) {
-    //         el.productQuantity = parseInt(payload.newKeyValue);
-    //       }
-    //       return el;
-    //     }
-    //   );
-
-    //   return {
-    //     ...state,
-    //     orders: [...savedAfterEditing],
-    //     selectedOrder: {
-    //       ...state.selectedOrder,
-    //       products: savedSelectedAfterEditing,
-    //     },
-    //   };
-
     case actionTypes.SAVE_PRODUCT_KEY_EDIT:
       const ordersAfterEditingSingleProduct = state.orders.map((order) => {
         if (order.orderId === state.selectedOrder.orderId) {
@@ -201,7 +164,7 @@ const reducer = (state = initialState, action) => {
         },
       };
 
-    case "CALCULATE_PAYMENT":
+    case actionTypes.CALCULATE_PAYMENT:
       const calculatedTotalPrice = state.orders.map((el) => {
         if (el.orderId === state.selectedOrder.orderId) {
           let totalPrice = 0;

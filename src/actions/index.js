@@ -58,10 +58,15 @@ export const saveEditProductKey = (productId, keyType, newKeyValue) => ({
 });
 
 export const calculatePayment = () => ({
-  type: "CALCULATE_PAYMENT",
+  type: actionTypes.CALCULATE_PAYMENT,
 });
 
 export const getOrders = (orders) => ({
   type: actionTypes.GET_ORDERS,
   payload: orders,
+});
+
+export const setCurrentUser = (user) => ({
+  type: actionTypes.SET_CURRENT_USER,
+  payload: user,
 });

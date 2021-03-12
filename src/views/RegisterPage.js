@@ -1,13 +1,15 @@
 import React from "react";
-import OrderForm from "../components/OrderForm";
+import { Link } from "react-router-dom";
+import RegisterLoginForm from "../components/RegisterLoginForm";
+import { unloggedUserRoutes } from "../routes";
 import styled from "styled-components";
 
 const Wrapper = styled.div`
   height: 100vh;
-  width: calc(100vw - 50px);
+  width: 100vw;
 `;
 
-const OrderFormWrapper = styled.div`
+const SignUpWrapper = styled.div`
   max-width: 500px;
   background-color: white;
   border-radius: 20px;
@@ -16,6 +18,10 @@ const OrderFormWrapper = styled.div`
   padding: 2rem;
   margin: 0 auto;
   margin-top: -15vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 `;
 
 const BlueStripe = styled.div`
@@ -30,17 +36,19 @@ const BlueStripe = styled.div`
   }
 `;
 
-const AddOrder = () => {
+const RegisterPage = () => {
   return (
     <Wrapper>
       <BlueStripe>
-        <h1>Add Order</h1>
+        <h1>Register Page</h1>
       </BlueStripe>
-      <OrderFormWrapper>
-        <OrderForm orderFormType="addOrder" />
-      </OrderFormWrapper>
+      <SignUpWrapper>
+        <RegisterLoginForm />
+        <p>You already have an account?</p>
+        <Link to={unloggedUserRoutes.login}>Go to sign in page</Link>
+      </SignUpWrapper>
     </Wrapper>
   );
 };
 
-export default AddOrder;
+export default RegisterPage;

@@ -30,7 +30,6 @@ const StyledValueAndKey = styled.div`
 
 const StyledProductFeature = styled.div`
   display: flex;
-  /* justify-content: center; */
   align-items: center;
   margin-top: 1rem;
   &:last-of-type {
