@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import styled from "styled-components";
 import TableChartIcon from "@material-ui/icons/TableChart";
 import AddIcon from "@material-ui/icons/Add";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import { loggedUserRoutes } from "../../routes";
@@ -51,14 +52,17 @@ const NavBar = ({ redirect, redirectFn }) => {
           </Link>
         </StyledNavLi>
         <StyledNavLi>
-          <button
-            onClick={() => {
-              auth.signOut();
-              redirectFn();
-            }}
-          >
-            log out
-          </button>
+          <Tooltip title="log out">
+            <IconButton
+              aria-label="Orders Table"
+              onClick={() => {
+                auth.signOut();
+                redirectFn();
+              }}
+            >
+              <ExitToAppIcon style={{ color: "black" }} />
+            </IconButton>
+          </Tooltip>
         </StyledNavLi>
       </StyledNavUl>
       {redirect ? <Redirect to="/" /> : null}
