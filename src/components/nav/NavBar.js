@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import TableChartIcon from "@material-ui/icons/TableChart";
 import AddIcon from "@material-ui/icons/Add";
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
+import { loggedUserRoutes } from "../../routes";
+import { auth } from "../../firebase/firebaseConfig";
+import { Redirect } from "react-router-dom";
+import withRedirect from "../../hoc/withRedirect";
 
 const StyledNav = styled.nav`
   height: 100vh;
@@ -24,17 +28,12 @@ const StyledNavLi = styled.li`
   margin-top: 1rem;
 `;
 
-// const StyledAddIcon = styled(AddIcon)`
-//   font-size: 40px;
-//   color: black;
-// `;
-
-const NavBar = () => {
+const NavBar = ({ redirect, redirectFn }) => {
   return (
     <StyledNav>
       <StyledNavUl>
         <StyledNavLi>
-          <Link to="/">
+          <Link to={loggedUserRoutes.main}>
             <Tooltip title="Add Order">
               <IconButton aria-label="Add Order">
                 <AddIcon style={{ color: "black" }} />
@@ -43,7 +42,7 @@ const NavBar = () => {
           </Link>
         </StyledNavLi>
         <StyledNavLi>
-          <Link to="/orders-table">
+          <Link to={loggedUserRoutes.ordersTable}>
             <Tooltip title="Orders Table">
               <IconButton aria-label="Orders Table">
                 <TableChartIcon style={{ color: "black" }} />
@@ -51,9 +50,20 @@ const NavBar = () => {
             </Tooltip>
           </Link>
         </StyledNavLi>
+        <StyledNavLi>
+          <button
+            onClick={() => {
+              auth.signOut();
+              redirectFn();
+            }}
+          >
+            log out
+          </button>
+        </StyledNavLi>
       </StyledNavUl>
+      {redirect ? <Redirect to="/" /> : null}
     </StyledNav>
   );
 };
 
-export default NavBar;
+export default withRedirect(NavBar);

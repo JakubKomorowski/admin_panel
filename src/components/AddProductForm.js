@@ -58,8 +58,6 @@ const AddProductForm = ({ addProduct, selectedOrder, openModal }) => {
     };
 
     handleProducts([...selectedOrder.products, product], selectedOrder.orderId);
-
-    // addProduct(product);
     e.target.reset();
     setCategories("");
   };
