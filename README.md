@@ -8,12 +8,12 @@ This project uses React.js as main framework, Firebase as a backend, Styled-Comp
 
 ## Main Tech stack:
 
-React.js,
-React-Router-Dom,
-Redux
-Firebase
-Styled-Components,
-Material UI,
+- React.js,
+- React-Router-Dom,
+- Redux
+- Firebase
+- Styled-Components,
+- Material UI,
 
 ## Getting started:
 
