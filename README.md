@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project uses React.js as main framework, Firebase as a backend, Styled-Components and Material UI for layout styles.
+Fictional admin panel application that enables users to add and track client's orders. Users can set the delivery date, check if the order is paid and also add, edit and remove products from each order. It’s based on React Redux and Firebase. This project helped me to strengthen my Redux and Material-UI skills.
 
 ### Live demo: https://admin-panel-react-app.netlify.app/
 
