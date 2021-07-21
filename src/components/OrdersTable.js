@@ -133,8 +133,8 @@ function EnhancedTableHead(props) {
           <Checkbox
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
             inputProps={{ "aria-label": "select all desserts" }}
+            onChange={onSelectAllClick}
           />
         </TableCell>
         {headCells.map((headCell) => (
@@ -320,7 +320,7 @@ const OrdersTable = ({
     if (event.target.checked) {
       const newSelecteds = orders.map((order) => order.orderId);
       setSelected(newSelecteds);
-      console.log(newSelecteds);
+      console.log(newSelecteds, "TUTAJ");
       return;
     }
     setSelected([]);
@@ -433,8 +433,8 @@ const OrdersTable = ({
                       <TableCell padding="checkbox">
                         <Checkbox
                           checked={isItemSelected}
-                          onChange={(event) => handleClick(event, orderId)}
                           inputProps={{ "aria-labelledby": labelId }}
+                          onChange={(event) => handleClick(event, orderId)}
                         />
                       </TableCell>
                       <TableCell

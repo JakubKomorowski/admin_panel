@@ -125,12 +125,6 @@ const reducer = (state = initialState, action) => {
         },
       };
 
-    case actionTypes.EDIT_PRODUCT:
-      const orderAfterEditProduct = state.orders.map((el) => {
-        if (el.orderId === state.selectedOrder.orderId) {
-        }
-      });
-
     case actionTypes.SELECT_PRODUCT_KEY_TO_EDIT:
       return {
         ...state,
